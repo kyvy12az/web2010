@@ -5,9 +5,9 @@ Trang web một file với hộp quà 3D, bản đồ sao kỷ niệm, vòng ả
 ## Cá nhân hóa trước khi tặng
 
 1. Tạo thư mục `images/`, thêm sáu ảnh (ví dụ `01.jpg` đến `06.jpg`). Không nên commit ảnh riêng tư vào repo công khai nếu chưa được người trong ảnh đồng ý.
-2. Trong `index.html`, tìm `const memories = [` và thay lần lượt `src:""` bằng `src:"images/01.jpg"`, `src:"images/02.jpg"`... Sửa `caption` thành kỷ niệm thật. Nếu dùng ít hơn sáu ảnh, có thể giữ các khung minh họa còn lại.
+2. Trong `index.html`, tìm `const memories = [` để sửa `caption` thành kỷ niệm thật. Sáu đường dẫn ảnh hiện là `images/01.jpg` đến `images/06.jpg`; thay file ảnh tại các đường dẫn ấy nếu muốn.
 3. Mỗi ngôi sao lấy tiêu đề từ một ảnh trong album. Hai khung ảnh trong căn phòng tự lấy ảnh số 1 và 2. Chạm vào khung để xem ảnh, vào phong bì để tới lá thư, vào bông hoa để nhận lời chúc.
-4. Trong `index.html`, tìm `const personal = {`: đổi `name` thành tên người yêu, `songTitle` thành tên bài hát, `voiceNote` thành lời nhắn, và mười dòng trong `reasons` thành những điều thật riêng của hai bạn. Đặt nhạc và ghi âm vào thư mục `media/` rồi điền `song:"media/nhac.mp3"` và `voice:"media/loi-nhan.mp3"`. Không có file thì web sẽ hiện nội dung mẫu và thông báo chưa thêm âm thanh, không tự phát nhạc.
+4. Trong `index.html`, tìm `const personal = {` để sửa tên, tên bài hát, lời nhắn và mười điều yêu thích. File nhạc và lời ghi âm hiện được khai báo tại `personals/song.mp3` và `personals/voice.mp3`. Nhạc bắt đầu khi bấm **Mở món quà**, tiếp tục khi đóng máy đĩa, và có nút nhỏ để tạm dừng. Một số trình duyệt có thể chặn phát tự động; khi đó chạm nút nhạc để bật. Lời ghi âm phát khi chạm điện thoại và tạm dừng nhạc nền trong lúc nghe.
 5. Sửa ba cột mốc trong phần `id="story"`, nội dung thư trong `id="letter"`, và lời chúc ở `id="ending"` cho đúng câu chuyện của hai bạn. Khi khám phá máy nghe nhạc, điện thoại và hộp bí mật, khu vườn cuối sẽ mở ra.
 6. Nút **Chọn ảnh từ máy** chỉ để xem thử trên máy đang mở web. Ảnh được giữ trong phiên trình duyệt và không lưu lên GitHub; muốn người yêu thấy ảnh qua link phải thêm ảnh vào repo hoặc dùng URL ảnh bạn kiểm soát.
 
