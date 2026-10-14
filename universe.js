@@ -29,7 +29,7 @@
   let yaw = -.12, pitch = .57, distance = 1120;
   let targetYaw = yaw, targetPitch = pitch, targetDistance = distance;
   let focus = [0, 0, 0], targetFocus = [0, 0, 0], hitTargets = [];
-  let pointer = null, background = null;
+  let pointer = null, background = null, worldOpen = false, worldTimer = 0;
   let seed = 2010;
   const random = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
   const stars = Array.from({ length: 480 }, () => ({
@@ -37,7 +37,7 @@
     size: .5 + random() * 1.4, phase: random() * Math.PI * 2
   }));
   function schedule() {
-    if (ctx && visible && !document.hidden && !frameId) frameId = requestAnimationFrame(frame);
+    if (ctx && visible && !worldOpen && !document.hidden && !frameId) frameId = requestAnimationFrame(frame);
   }
   function project(point) {
     const x = point[0] - focus[0], y = point[1] - focus[1], z = point[2] - focus[2];
@@ -144,7 +144,7 @@
   }
   function frame(now) {
     frameId=0;
-    if(!visible||document.hidden)return;
+    if(!visible||worldOpen||document.hidden)return;
     if(last && now-last<30){schedule();return;}
     const dt=last?Math.min(.06,(now-last)/1000):1/30;last=now;
     if(!paused){elapsed+=dt;if(selected<0){planets.forEach(p=>{p.angle+=p.speed*dt});if(!pointer)targetYaw+=dt*.018;}}
@@ -162,7 +162,8 @@
       const button=document.createElement('button');button.type='button';button.className='planet-chip';
       button.style.setProperty('--planet',planet.colors[1]);button.setAttribute('aria-pressed',String(selected===planet.i));
       const dot=document.createElement('i');dot.setAttribute('aria-hidden','true');button.append(dot,document.createTextNode(String(planet.i+1).padStart(2,'0')+' · '+names[planet.i]));
-      button.setAttribute('aria-label','Khám phá '+(data.getMemories()[planet.i]?.caption||names[planet.i]));
+      button.classList.toggle('explored',Boolean(window.PlanetWorlds?.isExplored(planet.i)));
+      button.setAttribute('aria-label',(window.PlanetWorlds?.has(planet.i)?'Bước vào thế giới ':'Khám phá ')+(names[planet.i]));
       button.addEventListener('click',()=>select(planet.i));picker.append(button);
     });
     if(selected>=0)showDetail(selected);
@@ -174,20 +175,24 @@
     thumb.hidden=!memory.src;if(memory.src){thumb.src=memory.src;thumb.alt=memory.caption;}
     open.hidden=!memory.src;
     if(!memory.src)description.textContent='Khoảnh khắc này đang chờ một tấm ảnh của chúng mình.';
+    if(window.PlanetWorlds?.has(i)){open.hidden=false;open.textContent='Bước vào thế giới này ↗';description.textContent=i===0?'Khu vườn trên mây đang chờ những bông hoa nở.':'Ghé bãi biển hoàng hôn để tìm lời nhắn trong chai.';}else open.textContent='Mở ảnh kỷ niệm ↗';
   }
   function select(i) {
     selected=i;updatePositions();targetFocus=planets[i].position.slice();targetDistance=width<500?400:480;
     showDetail(i);[...picker.children].forEach((button,index)=>button.setAttribute('aria-pressed',String(index===i)));
     document.getElementById('cosmosStatus').textContent='HÀNH TINH '+String(i+1).padStart(2,'0');schedule();
+    clearTimeout(worldTimer);if(window.PlanetWorlds?.has(i))worldTimer=setTimeout(()=>{if(selected===i&&!document.hidden)window.PlanetWorlds.open(i)},reduced.matches?0:500);
   }
   function reset() {
-    selected=-1;targetFocus=[0,0,0];targetDistance=1120;targetYaw=-.12;targetPitch=.57;
+    clearTimeout(worldTimer);selected=-1;targetFocus=[0,0,0];targetDistance=1120;targetYaw=-.12;targetPitch=.57;
     heading.textContent='Cả một vũ trụ dành cho Linh';description.textContent='Chạm một hành tinh hoặc chọn kỷ niệm bên trên để khám phá.';
     thumb.hidden=true;open.hidden=true;document.getElementById('cosmosStatus').textContent='VŨ TRỤ CỦA CHÚNG MÌNH';
     [...picker.children].forEach(button=>button.setAttribute('aria-pressed','false'));schedule();
   }
   function setPaused(value) {paused=value;pause.textContent=paused?'Tiếp tục ↻':'Tạm dừng ⏸';pause.setAttribute('aria-pressed',String(paused));schedule();}
-  open.addEventListener('click',()=>{if(selected>=0)data.openMemory(selected)});
+  open.addEventListener('click',()=>{clearTimeout(worldTimer);if(window.PlanetWorlds?.has(selected))window.PlanetWorlds.open(selected);else if(selected>=0)data.openMemory(selected)});
+  window.addEventListener('planet-world-toggle',event=>{worldOpen=event.detail.open;if(worldOpen){cancelAnimationFrame(frameId);frameId=0;last=0;}else{refresh();schedule();}});
+  window.addEventListener('planet-world-explored',refresh);
   thumb.addEventListener('error',()=>{thumb.hidden=true});
   document.getElementById('cosmosReset').addEventListener('click',reset);
   document.getElementById('cosmosIn').addEventListener('click',()=>{targetDistance=Math.max(400,targetDistance-140);schedule()});

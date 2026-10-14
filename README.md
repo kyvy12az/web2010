@@ -25,3 +25,12 @@ Trang hỗ trợ điện thoại, thao tác vuốt, phím mũi tên, nút xoay c
 - Khi đặt tiêu điểm trên cảnh, dùng phím mũi tên, dấu cộng/trừ, Home và phím cách.
 - `universe.js` xử lý cảnh và tương tác; `universe.css` xử lý giao diện. Giữ cả hai cạnh `index.html` khi đưa web lên máy chủ.
 - Cảnh giới hạn mật độ điểm ảnh, dừng khi ra khỏi màn hình hoặc chuyển tab, và mặc định đứng yên nếu hệ điều hành bật giảm chuyển động.
+
+## Hai thế giới bên trong hành tinh
+
+Chọn **Nụ cười (01)** hoặc **Bình yên (05)** để bay vào thế giới tương ứng. Nút **Về vũ trụ** hoặc phím Escape đưa người xem trở lại cảnh cũ.
+
+- **Nụ cười:** vườn trên mây, sáu bông hoa nở khi chạm. Mỗi hoa mở ảnh cùng thứ tự trong album và một lời nhắn.
+- **Bình yên:** biển hoàng hôn, ba chai thủy tinh chứa lời động viên.
+- Các nút dưới cảnh giúp chọn đồ vật thuận tiện bằng bàn phím hoặc điện thoại. Tiến trình khám phá được lưu trên trình duyệt đang dùng (localStorage), không gửi lên máy chủ.
+- Sửa lời nhắn trong `messages` và `letters` của `planet-worlds.js`; sửa diện mạo trong `planet-worlds.css`. Hai cảnh dùng phối cảnh CSS 3D, hỗ trợ giảm chuyển động và nút dừng.
