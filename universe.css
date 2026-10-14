@@ -1,0 +1,43 @@
+.universe-section{padding:90px 20px 85px;text-align:center}
+.universe-section .section-title em{color:#f2b8c7}
+.cosmos{position:relative;isolation:isolate;width:min(1120px,100%);height:610px;margin:34px auto 0;overflow:hidden;border:1px solid #d9baff30;border-radius:28px;background:#090c1e;box-shadow:0 35px 90px #06061177,inset 0 0 80px #8d67c71a}
+.cosmos canvas{display:block;width:100%;height:100%;touch-action:pan-y;cursor:grab;outline-offset:-5px}
+.cosmos canvas:active{cursor:grabbing}
+.cosmos-label{position:absolute;top:25px;left:27px;text-align:left;pointer-events:none;max-width:65%;text-shadow:0 2px 14px #090c1e}
+.cosmos-label small{display:block;color:#c5b3e6;font-size:10px;letter-spacing:.27em;margin-bottom:9px}
+.cosmos-label strong{font:400 clamp(22px,3.5vw,35px)/1.25 "Playfair Display",serif;color:#f5e6f3}
+.cosmos-label p{font-size:12px;color:#b7aecf;margin:10px 0}
+.cosmos-live{position:absolute;right:23px;top:25px;display:flex;gap:8px;align-items:center;font-size:10px;letter-spacing:.13em;color:#d4c6e5;pointer-events:none}
+.cosmos-live i{width:5px;height:5px;background:#facdb1;border-radius:50%;box-shadow:0 0 12px #ffc69e}
+.cosmos-toolbar{position:absolute;bottom:21px;left:20px;right:20px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.cosmos-buttons{display:flex;gap:7px}
+.cosmos-toolbar button{min-height:42px;padding:9px 14px;border:1px solid #ceb9ed44;border-radius:13px;background:#16162ddc;color:#f5e7f2;font:500 12px "DM Sans",sans-serif;backdrop-filter:blur(10px);transition:background .2s}
+.cosmos-toolbar button:hover{background:#55436b}
+.cosmos-toolbar .cosmos-zoom{width:42px;font-size:19px;padding:6px}
+.cosmos-hint{position:absolute;bottom:78px;left:0;right:0;color:#b9adcd;font-size:11px;letter-spacing:.07em;pointer-events:none;margin:0}
+.planet-picker{display:flex;justify-content:center;flex-wrap:wrap;gap:9px;margin:22px auto;max-width:900px}
+.planet-chip{display:flex;align-items:center;gap:9px;background:#ffffff05;border:1px solid #bda3cf40;color:#d7c8df;border-radius:100px;padding:10px 16px;font:500 12px "DM Sans",sans-serif;transition:background .2s,border-color .2s}
+.planet-chip i{width:13px;height:13px;flex-shrink:0;border-radius:50%;background:radial-gradient(circle at 30% 25%,#fff3,var(--planet),#16172e);box-shadow:0 0 11px var(--planet)}
+.planet-chip:hover,.planet-chip[aria-pressed="true"]{background:#b08cce24;border-color:#eec1da;color:#fff1f7}
+.universe-detail{display:flex;align-items:center;gap:20px;width:min(690px,100%);margin:22px auto 0;padding:19px 23px;border:1px solid #c4a4d538;border-radius:20px;background:linear-gradient(120deg,#49324e55,#27223955);text-align:left;min-height:130px}
+.universe-thumb{width:78px;height:94px;flex-shrink:0;border-radius:10px;object-fit:cover;background:#392b4a;border:3px solid #ead6db;transform:rotate(-5deg);box-shadow:0 10px 20px #07051255}
+.universe-detail img[hidden]{display:none}
+.universe-detail h3{font:400 25px/1.2 "Playfair Display",serif;color:#ffe0d0;margin:0 0 8px}
+.universe-detail p{color:#c8b6d1;font-size:13px;line-height:1.6;margin:0 0 10px}
+.universe-open{border:0;background:none;color:#ffd9bc;text-decoration:underline;text-underline-offset:4px;padding:5px 0;font-weight:500;font-size:13px}
+.universe-open[hidden]{display:none}
+.cosmos-fallback{position:absolute;left:20px;right:20px;top:45%;color:#f4e3f3;text-align:center;line-height:1.8}
+@media(max-width:650px){
+ .universe-section{padding:65px 14px}
+ .cosmos{height:470px;border-radius:21px;margin-top:25px}
+ .cosmos-label{top:20px;left:18px;max-width:80%}
+ .cosmos-label small{font-size:9px}.cosmos-label strong{font-size:24px}
+ .cosmos-live{top:112px;left:19px;right:auto;font-size:9px}
+ .cosmos-toolbar{left:12px;right:12px;bottom:14px;gap:5px}
+ .cosmos-toolbar button{padding:9px 10px;font-size:11px;min-height:42px}
+ .cosmos-buttons{gap:5px}.cosmos-hint{bottom:72px;font-size:10px}
+ .planet-picker{gap:7px}.planet-chip{padding:9px 12px;font-size:11px}
+ .universe-detail{padding:17px;gap:15px}.universe-detail h3{font-size:23px}
+ .universe-thumb{width:64px;height:83px}
+}
+@media(prefers-reduced-motion:reduce){.planet-chip,.cosmos-toolbar button{transition:none}}
