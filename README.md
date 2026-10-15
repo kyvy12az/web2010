@@ -1,6 +1,6 @@
 # Web quà tặng 20/10
 
-Trang web với hộp quà 3D, vũ trụ kỷ niệm tương tác, vòng ảnh xoay, căn phòng kỷ niệm 3D có thể kéo để đổi góc nhìn, ba đồ vật bí mật, dòng thời gian, lá thư và khu vườn kết. Không cần cài đặt: mở `index.html` bằng trình duyệt hoặc bật GitHub Pages để gửi link.
+Trang web với hộp quà 3D, vũ trụ kỷ niệm tương tác, vòng ảnh xoay, căn phòng kỷ niệm 3D có thể kéo để đổi góc nhìn, ba đồ vật bí mật, dòng thời gian, lá thư và khu vườn kết. Không cần cài đặt: bật GitHub Pages để gửi link hoặc dùng máy chủ HTTP cục bộ (ví dụ `python -m http.server`). Cảnh Three.js cần được mở qua HTTP/HTTPS.
 
 ## Cá nhân hóa trước khi tặng
 
@@ -33,4 +33,12 @@ Chọn **Nụ cười (01)** hoặc **Bình yên (05)** để bay vào thế gi�
 - **Nụ cười:** vườn trên mây, sáu bông hoa nở khi chạm. Mỗi hoa mở ảnh cùng thứ tự trong album và một lời nhắn.
 - **Bình yên:** biển hoàng hôn, ba chai thủy tinh chứa lời động viên.
 - Các nút dưới cảnh giúp chọn đồ vật thuận tiện bằng bàn phím hoặc điện thoại. Tiến trình khám phá được lưu trên trình duyệt đang dùng (localStorage), không gửi lên máy chủ.
-- Sửa lời nhắn trong `messages` và `letters` của `planet-worlds.js`; sửa diện mạo trong `planet-worlds.css`. Hai cảnh dùng phối cảnh CSS 3D, hỗ trợ giảm chuyển động và nút dừng.
+- Sửa lời nhắn trong `messages` và `letters` của `planet-worlds.js`; sửa diện mạo trong `planet-worlds.css`. Vườn Nụ cười dùng CSS 3D; Bình yên dùng Three.js/WebGL, hỗ trợ giảm chuyển động và nút dừng.
+
+## Bãi biển Three.js
+
+- `beach-three.js` dựng địa hình cát, sóng và bọt biển bằng shader, trời hoàng hôn, bóng cây, đá và ba chai thủy tinh 3D. `beach-ui.css` bố trí giao diện toàn màn hình và lá thư trên điện thoại.
+- Kéo để nhìn quanh, chạm chai hoặc dùng nút chọn chai để mở thư; chọn **Tiếp tục ngắm biển** để trở lại góc nhìn ban đầu. Bàn phím hỗ trợ mũi tên và Home khi canvas được chọn.
+- Three.js 0.170.0 tải từ jsDelivr khi vào Bình yên lần đầu; cần kết nối mạng và WebGL. Nếu không tải được cảnh, các nút đọc thư vẫn dùng được.
+- Giới hạn độ phân giải trên điện thoại, gom lá cây bằng instancing, dừng khi ẩn tab và giải phóng tài nguyên khi rời cảnh.
+- Đây là cảnh 3D dựng bằng hình học và shader, không phải ảnh/video bãi biển hay mô hình quét thực tế.
