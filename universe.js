@@ -175,7 +175,7 @@
     thumb.hidden=!memory.src;if(memory.src){thumb.src=memory.src;thumb.alt=memory.caption;}
     open.hidden=!memory.src;
     if(!memory.src)description.textContent='Khoảnh khắc này đang chờ một tấm ảnh của chúng mình.';
-    if(window.PlanetWorlds?.has(i)){open.hidden=false;open.textContent='Bước vào thế giới này ↗';description.textContent=i===0?'Khu vườn trên mây đang chờ những bông hoa nở.':'Ghé bãi biển hoàng hôn để tìm lời nhắn trong chai.';}else open.textContent='Mở ảnh kỷ niệm ↗';
+    if(window.PlanetWorlds?.has(i)){open.hidden=false;open.textContent=i===1?'Bước vào rạp kỷ niệm ↗':'Bước vào thế giới này ↗';description.textContent=i===0?'Khu vườn trên mây đang chờ những bông hoa nở.':i===1?'Một suất chiếu chỉ dành cho Linh, với những ngày đẹp của chúng mình.':'Ghé bãi biển hoàng hôn để tìm lời nhắn trong chai.';}else open.textContent='Mở ảnh kỷ niệm ↗';
   }
   function select(i) {
     selected=i;updatePositions();targetFocus=planets[i].position.slice();targetDistance=width<500?400:480;

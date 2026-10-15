@@ -1,5 +1,15 @@
 # Web quà tặng 20/10
 
+## Rạp kỷ niệm · Hành tinh Ngày đẹp
+
+Chọn **Ngày đẹp (02)** để vào rạp, rồi chạm **Mời Linh vào rạp**: camera đến hàng D, rèm mở và màn chiếu phát slideshow từ album hiện có, cùng `personals/voice.mp3`. Có thể tạm dừng, tắt lời nhắn, chiếu lại, chọn ghế hoặc kéo để nhìn quanh. Nhạc nền tạm dừng khi vào rạp và khôi phục khi thoát nếu trước đó đang phát. Chuyển tab sẽ tạm dừng suất chiếu.
+
+- `cinema-world.js`: cửa vào rạp, vé, âm thanh và điều khiển.
+- `cinema-three.js`: cảnh Three.js, rèm và màn chiếu CanvasTexture; đây là slideshow, chưa dùng video MP4.
+- `vantage-geometry.js`: phần dựng ghế và bố trí hàng ghế được trích/adapt từ [Vantage](https://github.com/thebuggeddev/vantage), file `index.html` blob `613ce6518cd2f99da410de003b89ba24d15a3172`. Thay đổi: tách ES module, Three.js r170, cấu hình rạp riêng; không dùng giao diện đặt vé, trailer hoặc analytics của bản gốc.
+- Phần mã Vantage theo **PolyForm Noncommercial 1.0.0**; giữ giấy phép và Required Notice tại `vendor/vantage/LICENSE.md`, cùng thông báo thư viện tại `vendor/vantage/THIRD-PARTY-NOTICES.md`. Dự án quà tặng này sử dụng phi thương mại. Three.js tải từ jsDelivr khi mở rạp.
+
+
 Trang web với hộp quà 3D, vũ trụ kỷ niệm tương tác, vòng ảnh xoay, căn phòng kỷ niệm 3D có thể kéo để đổi góc nhìn, ba đồ vật bí mật, dòng thời gian, lá thư và khu vườn kết. Không cần cài đặt: bật GitHub Pages để gửi link hoặc dùng máy chủ HTTP cục bộ (ví dụ `python -m http.server`). Cảnh Three.js cần được mở qua HTTP/HTTPS.
 
 ## Cá nhân hóa trước khi tặng
@@ -42,3 +52,4 @@ Chọn **Nụ cười (01)** hoặc **Bình yên (05)** để bay vào thế gi�
 - Three.js 0.170.0 tải từ jsDelivr khi vào Bình yên lần đầu; cần kết nối mạng và WebGL. Nếu không tải được cảnh, các nút đọc thư vẫn dùng được.
 - Giới hạn độ phân giải trên điện thoại, gom lá cây bằng instancing, dừng khi ẩn tab và giải phóng tài nguyên khi rời cảnh.
 - Đây là cảnh 3D dựng bằng hình học và shader, không phải ảnh/video bãi biển hay mô hình quét thực tế.
+
