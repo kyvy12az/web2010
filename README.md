@@ -36,14 +36,23 @@ Trang hỗ trợ điện thoại, thao tác vuốt, phím mũi tên, nút xoay c
 - `universe.js` xử lý cảnh và tương tác; `universe.css` xử lý giao diện. Giữ cả hai cạnh `index.html` khi đưa web lên máy chủ.
 - Cảnh giới hạn mật độ điểm ảnh, dừng khi ra khỏi màn hình hoặc chuyển tab, và mặc định đứng yên nếu hệ điều hành bật giảm chuyển động.
 
-## Hai thế giới bên trong hành tinh
+## Các thế giới bên trong hành tinh
 
 Chọn **Nụ cười (01)** hoặc **Bình yên (05)** để bay vào thế giới tương ứng. Nút **Về vũ trụ** hoặc phím Escape đưa người xem trở lại cảnh cũ.
 
 - **Nụ cười:** vườn trên mây, sáu bông hoa nở khi chạm. Mỗi hoa mở ảnh cùng thứ tự trong album và một lời nhắn.
 - **Bình yên:** biển hoàng hôn, ba chai thủy tinh chứa lời động viên.
 - Các nút dưới cảnh giúp chọn đồ vật thuận tiện bằng bàn phím hoặc điện thoại. Tiến trình khám phá được lưu trên trình duyệt đang dùng (localStorage), không gửi lên máy chủ.
-- Sửa lời nhắn trong `messages` và `letters` của `planet-worlds.js`; sửa diện mạo trong `planet-worlds.css`. Vườn Nụ cười dùng CSS 3D; Bình yên dùng Three.js/WebGL, hỗ trợ giảm chuyển động và nút dừng.
+- Sửa lời nhắn trong `messages` và `letters` của `planet-worlds.js`. Vườn Nụ cười và Bình yên dùng Three.js/WebGL, hỗ trợ giảm chuyển động và nút dừng.
+
+## Khu vườn trên mây · Nụ cười
+
+- Đảo vườn 3D với địa hình cỏ và chân đá lơ lửng trên biển mây chuyển động; cây hoa hồng phấn ở giữa có cánh hoa rơi, xích đu đôi, lối đá và bướm bay.
+- Chạm một trong sáu bông hoa (hoặc sáu nút dưới màn hình) để hoa nở và mở đúng ảnh/lời nhắn trong album. Mở đủ sáu hoa sẽ làm cây phát sáng và hiện lời nhắn hoàn thành. Tiến trình cũ được giữ trong `linh-planet-worlds-v1`; danh sách được loại trùng khi đọc.
+- Kéo để xoay, phím mũi tên để đổi góc, Home hoặc **Tiếp tục ngắm vườn** để về toàn cảnh. Nút dừng và chế độ giảm chuyển động dừng mây, bướm, cánh hoa và xích đu; hoa vẫn mở khi được chọn.
+- `garden-three.js` dựng cảnh, `garden-ui.css` bố trí ảnh và lời nhắn trên điện thoại. Module chỉ tải khi vào Nụ cười; nếu WebGL/CDN lỗi vẫn dùng được sáu nút để xem ảnh. Cảnh dừng khi ẩn tab và giải phóng tài nguyên khi đóng.
+- `small-world-garden.js` tích hợp trực tiếp các hàm `smoothstep`, `islandFalloff`, `makeHeightFn` từ `src/terrain.js` và `makeButterfly` từ `src/fauna/butterfly.js` của [Small World](https://github.com/paulrobello/small-world), snapshot tree `0416bbcf7dbc58b2782f13698c74ac1dde459613`. Adaptation: bỏ catalog/global state, dùng Three.js r170 CDN, height sampler riêng, đường bay bướm riêng. Không nhúng toàn bộ ứng dụng Small World.
+- Copyright © 2026 Paul Robello, giấy phép MIT được giữ tại `vendor/small-world/LICENSE`. Cây, hoa tương tác, xích đu, mây và phần thưởng là phần tùy biến của web này.
 
 ## Bãi biển Three.js
 
