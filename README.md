@@ -1,5 +1,14 @@
 # Web quà tặng 20/10
 
+## Cây điều ước · Hành tinh Ngày mai
+
+Chọn **Ngày mai (06)** để vào ngọn đồi dưới ánh trăng. Cây xanh tím dùng bộ sinh thân/cành/lá của [EZ Tree](https://github.com/dgreenheck/ez-tree), giữ giấy phép MIT và nguồn tại `vendor/ez-tree/`. Sáu đèn lồng treo ở các vị trí lấy từ cành thật; chạm đèn hoặc nút tương ứng để camera tiến gần và mở lời nhắn. Mở đủ sáu đèn, các sao nối thành trái tim; chọn **Ngắm bầu trời** để xem toàn cảnh.
+
+- **Viết điều ước** tạo đèn lồng bay lên. Giữ tối đa 30 điều ước, mỗi điều 240 ký tự, trong localStorage `linh-wishing-tree-v1` của trình duyệt đang dùng. Có thể đọc lại trong khung viết điều ước. Không có backend, không đồng bộ hoặc gửi điều ước sang máy khác. Nếu lưu thất bại, giao diện báo rõ chỉ giữ được trong phiên.
+- `wish-tree-world.js`: nội dung sáu lời nhắn, giao diện và lưu tiến trình. `wish-tree-three.js`: cây, đèn, đom đóm, sao băng và trái tim. `wish-tree.css`: bố trí điện thoại/máy tính.
+- Nút dừng và chế độ giảm chuyển động dừng chuyển động nền; đèn mới xuất hiện ở vị trí trên cao nếu đang dừng. Chạm vẫn mở lời nhắn và hoàn tất hiệu ứng trái tim. Cảnh dừng khi ẩn tab, giải phóng tài nguyên khi đóng; chỉ tải mã 3D khi vào hành tinh. Khi 3D không tải được, vẫn đọc lời nhắn và lưu điều ước.
+
+
 ## Rạp kỷ niệm · Hành tinh Ngày đẹp
 
 Chọn **Ngày đẹp (02)** để vào rạp, rồi chạm **Mời Linh vào rạp**: camera đến hàng D, rèm mở và màn chiếu phát slideshow từ album hiện có, cùng `personals/voice.mp3`. Có thể tạm dừng, tắt lời nhắn, chiếu lại, chọn ghế hoặc kéo để nhìn quanh. Nhạc nền tạm dừng khi vào rạp và khôi phục khi thoát nếu trước đó đang phát. Chuyển tab sẽ tạm dừng suất chiếu.
