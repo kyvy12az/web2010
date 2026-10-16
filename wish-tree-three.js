@@ -1,6 +1,7 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js';
 import { Tree } from './vendor/ez-tree/tree.js';
 import { oakPreset } from './vendor/ez-tree/preset.js';
+import { addWishFlowers } from './wish-flowers.js';
 
 export function createWishTree(host, { opened = [], paused = false, onSelect } = {}) {
   const mobile=host.clientWidth<700,reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -13,6 +14,7 @@ export function createWishTree(host, { opened = [], paused = false, onSelect } =
   const moonlight=new THREE.DirectionalLight('#b7ccff',2.6);moonlight.position.set(-12,22,4);moonlight.castShadow=true;moonlight.shadow.mapSize.set(1024,1024);Object.assign(moonlight.shadow.camera,{left:-12,right:12,top:15,bottom:-12,near:1,far:60});moonlight.shadow.normalBias=.04;scene.add(moonlight);
   const hillHeight=(x,z)=>1.3*Math.exp(-(x*x+z*z)/80)-.1;
   const groundGeo=new THREE.PlaneGeometry(120,120,80,80);groundGeo.rotateX(-Math.PI/2);const gp=groundGeo.attributes.position;for(let i=0;i<gp.count;i++)gp.setY(i,hillHeight(gp.getX(i),gp.getZ(i)));groundGeo.computeVertexNormals();const ground=new THREE.Mesh(groundGeo,new THREE.MeshStandardMaterial({color:'#273e40',roughness:1}));ground.receiveShadow=true;scene.add(ground);
+  const meadow=addWishFlowers(scene,hillHeight,mobile);
   // EZ Tree's full branch/leaf generator; local procedural leaf alpha replaces external texture files.
   const leafCanvas=document.createElement('canvas');leafCanvas.width=leafCanvas.height=128;const lc=leafCanvas.getContext('2d');lc.clearRect(0,0,128,128);lc.fillStyle='#d4e1ed';lc.beginPath();lc.moveTo(64,5);lc.bezierCurveTo(118,35,118,95,64,124);lc.bezierCurveTo(10,95,10,35,64,5);lc.fill();lc.strokeStyle='#728eb0';lc.lineWidth=3;lc.beginPath();lc.moveTo(64,12);lc.lineTo(64,119);lc.stroke();
   const leafTexture=new THREE.CanvasTexture(leafCanvas);leafTexture.colorSpace=THREE.SRGBColorSpace;
@@ -46,7 +48,7 @@ export function createWishTree(host, { opened = [], paused = false, onSelect } =
   function resize(){const w=host.clientWidth,h=host.clientHeight;if(!w||!h)return;renderer.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix();homeDistance=Math.max(25,7/(Math.tan(THREE.MathUtils.degToRad(24))*camera.aspect));if(selected<0){home();camera.position.copy(target);look.copy(targetLook);}schedule();}
   function schedule(){if(active&&!document.hidden&&!raf)raf=requestAnimationFrame(frame);}
   function frame(now){raf=0;if(!active||document.hidden)return;if(last&&now-last<32){schedule();return}const dt=last?Math.min(.06,(now-last)/1000):.033;last=now;if(!stopped)time+=dt;const blend=reduced?1:1-Math.exp(-dt*4);camera.position.lerp(target,blend);look.lerp(targetLook,blend);camera.lookAt(look);let moving=camera.position.distanceTo(target)+look.distanceTo(targetLook)>.003;
-    tree.update(time*.25);lanterns.forEach((l,i)=>{const goal=seen.has(i)?1:0;l.value+=(goal-l.value)*blend;moving ||= Math.abs(goal-l.value)>.002;l.paper.emissiveIntensity=1.1+l.value*.8+(selected===i?.8:0);l.glow.material.opacity=.3+l.value*.25;l.group.rotation.z=Math.sin(time*.65+i)*.035;});
+    tree.update(time*.25);meadow.update(time);lanterns.forEach((l,i)=>{const goal=seen.has(i)?1:0;l.value+=(goal-l.value)*blend;moving ||= Math.abs(goal-l.value)>.002;l.paper.emissiveIntensity=1.1+l.value*.8+(selected===i?.8:0);l.glow.material.opacity=.3+l.value*.25;l.group.rotation.z=Math.sin(time*.65+i)*.035;});
     if(seen.size===6&&heartProgress<1){heartProgress=reduced?1:Math.min(1,heartProgress+dt*.3);moving=true;}heartGeo.setDrawRange(0,Math.floor(heartProgress*81));heartStars.material.opacity=heartProgress*.9;
     fireSeeds.forEach((s,i)=>{firePos[i*3]=s.x+Math.sin(time*.4+s.p)*.65;firePos[i*3+1]=s.y+Math.sin(time*.7+s.p)*.3;firePos[i*3+2]=s.z+Math.cos(time*.3+s.p)*.5;});fireGeo.attributes.position.needsUpdate=true;stars.material.opacity=.7+Math.sin(time*.4)*.12;
     const mt=time%17;meteor.material.opacity=mt<1.3?Math.sin(mt/1.3*Math.PI)*.7:0;meteor.position.set(12-mt*9,23-mt*4,-28);
