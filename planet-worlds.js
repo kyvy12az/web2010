@@ -66,7 +66,7 @@
     $('worldTag').textContent=id===0?'Hành tinh 01 · Nụ cười':'Hành tinh 05 · Bình yên';$('worldTitle').textContent=current.title;$('worldSubtitle').textContent=current.subtitle;
     photo.hidden=true;$('worldItemLabel').textContent='Dành riêng cho Linh';$('worldItemTitle').textContent=current.intro;$('worldMessage').textContent=current.note;
     dismiss.textContent=id===0?'Tiếp tục ngắm vườn':'Tiếp tục ngắm biển';syncGardenReward();motionPaused=reduced.matches;build();progress();syncMusic();syncMotion();diorama.style.setProperty('--world-x','0deg');diorama.style.setProperty('--world-y','0deg');
-    modal.showModal();if(id===0)startGarden();if(id===4)startBeach();modal.scrollTop=0;$('worldBack').focus();window.dispatchEvent(new CustomEvent('planet-world-toggle',{detail:{open:true}}));
+    modal.showModal();const ready=id===0?startGarden():startBeach();modal.scrollTop=0;$('worldBack').focus();window.dispatchEvent(new CustomEvent('planet-world-toggle',{detail:{open:true}}));return ready;
   }
   $('worldBack').addEventListener('click',()=>modal.close());
   modal.addEventListener('close',()=>{gardenToken++;garden?.dispose();garden=null;reward.hidden=true;$('worldStage').querySelectorAll('.garden-loading').forEach(n=>n.remove());beachToken++;beach?.dispose();beach=null;$('worldStage').querySelectorAll('.beach-loading').forEach(n=>n.remove());document.body.style.overflow=oldOverflow;modal.classList.add('world-paused');current=null;window.dispatchEvent(new CustomEvent('planet-world-toggle',{detail:{open:false}}));if(origin?.isConnected)origin.focus({preventScroll:true});});

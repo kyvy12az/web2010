@@ -34,5 +34,5 @@
   stage.addEventListener('wish-context-lost',()=>{status.textContent='Cảnh đã tạm dừng. Linh quay về vũ trụ rồi mở lại nhé; điều ước đã lưu vẫn còn.';});
   dialog.addEventListener('keydown',e=>e.stopPropagation());
   dialog.addEventListener('close',()=>{token++;scene?.dispose();scene=null;stage.replaceChildren();document.body.style.overflow=overflow;window.dispatchEvent(new CustomEvent('planet-world-toggle',{detail:{open:false}}));if(origin?.isConnected)origin.focus({preventScroll:true});});
-  window.PlanetWorlds={has:id=>id===5||previous.has(id),isExplored:id=>id===5?saved.opened.length>0:previous.isExplored(id),open:id=>{if(id===5)open();else if(!dialog.open)previous.open(id);}};
+  window.PlanetWorlds={has:id=>id===5||previous.has(id),isExplored:id=>id===5?saved.opened.length>0:previous.isExplored(id),open:id=>{if(id===5)return open();else if(!dialog.open)return previous.open(id);}};
 })();

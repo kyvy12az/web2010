@@ -36,5 +36,5 @@
   stage.addEventListener('cinema-context-lost', () => { pause(true); status.textContent = 'Rạp đã tạm dừng. Linh quay về vũ trụ rồi mở lại nhé.'; });
   document.addEventListener('visibilitychange', () => { if (document.hidden && dialog.open && started && !ended) pause(true); });
   dialog.addEventListener('close', () => { token++; scene?.dispose(); scene = null; stage.replaceChildren(); voice?.pause(); if (voice) { voice.removeAttribute('src'); voice.load(); } voice = null; document.body.style.overflow = overflow; if (resumeMusic) music?.play().catch(() => {}); window.dispatchEvent(new CustomEvent('planet-world-toggle', { detail: { open: false } })); if (origin?.isConnected) origin.focus({ preventScroll: true }); });
-  window.PlanetWorlds = { has: id => id === 1 || worlds.has(id), isExplored: id => id === 1 ? explored : worlds.isExplored(id), open: id => { if (id === 1) enter(); else if (!dialog.open) worlds.open(id); } };
+  window.PlanetWorlds = { has: id => id === 1 || worlds.has(id), isExplored: id => id === 1 ? explored : worlds.isExplored(id), open: id => { if (id === 1) return enter(); else if (!dialog.open) return worlds.open(id); } };
 })();

@@ -1,5 +1,14 @@
 # Web quà tặng 20/10
 
+## Bay xuyên mây khi vào hành tinh
+
+Chọn Nụ cười, Ngày đẹp, Bình yên hoặc Ngày mai: camera của vũ trụ tiến gần, sau đó đi xuyên lớp mây thể tích trước khi hiện thế giới mới. Chuyển cảnh thường dài khoảng 3,5 giây, kéo dài có giới hạn nếu cảnh đang tải. Hai hành tinh còn lại vẫn mở ảnh như trước.
+
+- `cloud-transition.js` ray-march mật độ mây 3D bằng WebGL, chuyển động tiến về phía trước và ánh sáng theo bốn bảng màu: hồng trắng, vàng ấm, hoàng hôn và xanh tím. `cloud-transition.css` cung cấp giao diện và mây CSS dự phòng khi WebGL lỗi.
+- Thế giới đích mở sau lớp mây che kín; các hàm mở cảnh trả Promise để chờ tải trước khi hé mây. Lớp chuyển cảnh nằm trên dialog đích, khóa nhấn lặp và dọn shader/buffer khi kết thúc.
+- **Bỏ qua chuyển cảnh** hoặc Escape vào thế giới ngay. Giảm chuyển động của hệ điều hành bỏ qua chuyến bay; chuyển tab cũng kết thúc lớp phủ. Giới hạn độ phân giải ray marching trên điện thoại và giới hạn thời gian chờ để tránh kẹt màn hình.
+
+
 ## Cây điều ước · Hành tinh Ngày mai
 
 Chọn **Ngày mai (06)** để vào ngọn đồi dưới ánh trăng. Cây xanh tím dùng bộ sinh thân/cành/lá của [EZ Tree](https://github.com/dgreenheck/ez-tree), giữ giấy phép MIT và nguồn tại `vendor/ez-tree/`. Sáu đèn lồng treo ở các vị trí lấy từ cành thật; chạm đèn hoặc nút tương ứng để camera tiến gần và mở lời nhắn. Mở đủ sáu đèn, các sao nối thành trái tim; chọn **Ngắm bầu trời** để xem toàn cảnh.
