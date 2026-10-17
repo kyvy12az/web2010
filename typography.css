@@ -1,0 +1,60 @@
+/* A storybook voice for Linh. Load after the original component styles. */
+:root {
+  --font-body: 'Be Vietnam Pro', system-ui, sans-serif;
+  --font-title: 'Cormorant Garamond', Georgia, serif;
+  --font-hand: 'Dancing Script', cursive;
+  font-family: var(--font-body);
+}
+body, .memory-cinema, .wish-world { font-family: var(--font-body); }
+button, input, textarea, select,
+.world-top button, .world-action, .world-object>small,
+.world-object-list button, .cosmos-toolbar button, .planet-chip,
+.cloud-caption small, .cloud-skip, .wish-compose textarea {
+  font-family: var(--font-body);
+}
+.hero h1, .section-title, .end h2, .moment h3,
+.secret-dialog h3, .modal-inner h3, .reason-text, .cassette-label,
+.cosmos-label strong, .universe-detail h3, .world-heading h2,
+.world-panel h3, .cinema-top h2, .cinema-ticket h3,
+.wish-heading h2, .wish-letter h3, .wish-compose h3, .cloud-caption p {
+  font-family: var(--font-title);
+  font-weight: 500;
+  letter-spacing: -.025em;
+  line-height: 1.2;
+  text-wrap: balance;
+}
+.hero h1 { letter-spacing: -.045em; line-height: 1.14; }
+.hero h1 em, .section-title em {
+  font-family: var(--font-hand);
+  font-weight: 500;
+  font-style: normal;
+  letter-spacing: -.035em;
+  display: inline-block;
+  padding: .06em .09em .12em;
+  text-shadow: 0 3px 24px #f3b4bd26;
+}
+.brand, .signature, .letter h3, .photo-card span {
+  font-family: var(--font-hand);
+  font-weight: 600;
+  letter-spacing: 0;
+}
+.brand { font-size: 27px; }
+.signature { font-size: clamp(28px, 5vw, 36px); line-height: 1.5; }
+.letter h3 { font-size: clamp(36px, 6vw, 48px); line-height: 1.4; }
+.photo-card span { font-size: 20px; line-height: 1.4; padding-top: 8px; }
+.letter p { font-size: 15px; line-height: 2.1; }
+.eyebrow { font-weight: 500; letter-spacing: .24em; line-height: 1.8; }
+.section-title { line-height: 1.22; }
+.world-panel p, .wish-letter p { line-height: 1.9; }
+.wish-compose textarea { font-size: 16px; }
+.cinema-top>div { min-width: 0; }
+.cinema-top h2, .wish-heading h2 { overflow-wrap: break-word; }
+@media (max-width: 650px) {
+  .hero h1 { font-size: clamp(52px, 14vw, 85px); }
+  .section-title { font-size: clamp(36px, 9.5vw, 54px); }
+  .photo-card span { font-size: 16px; padding-top: 6px; }
+  .brand { font-size: 23px; }
+  .eyebrow { letter-spacing: .16em; }
+  .letter p { font-size: 14px; }
+  .wish-heading h2 { line-height: 1.25; }
+}
