@@ -43,6 +43,53 @@ export function createWishTree(host, { opened = [], wishes = [], paused = false,
   const heartStars=new THREE.Points(new THREE.BufferGeometry().setFromPoints(heartPoints.filter((_,i)=>i%4===0)),new THREE.PointsMaterial({color:'#ffe2d6',size:.15,transparent:true,opacity:0,fog:false}));scene.add(heartStars);
   const fireGeo=new THREE.BufferGeometry(),firePos=new Float32Array(55*3),fireSeeds=Array.from({length:55},()=>({x:(random()-.5)*18,y:random()*2+.5,z:(random()-.5)*16,p:random()*7}));fireGeo.setAttribute('position',new THREE.BufferAttribute(firePos,3));scene.add(new THREE.Points(fireGeo,new THREE.PointsMaterial({map:haloTexture,color:'#e8edaa',size:.18,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending})));
   const meteor=new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(),new THREE.Vector3(3,1,0)]),new THREE.LineBasicMaterial({color:'#e0d4ff',transparent:true,opacity:0,fog:false}));scene.add(meteor);
+
+  // Three staggered bursts, bounded particle count, no full-screen flash.
+  const fireworks=[];
+  function clearFireworks(){
+    for(const f of fireworks){scene.remove(f.points);f.points.geometry.dispose();f.points.material.dispose();}
+    fireworks.length=0;
+  }
+  function celebrateWish(){
+    if(reduced||stopped)return;
+    clearFireworks();
+    const palette=['#ffd89b','#ffb7d5','#b8caff'];
+    for(let k=0;k<3;k++){
+      const count=mobile?85:150,positions=new Float32Array(count*3*3),velocities=[];
+      for(let i=0;i<count;i++){
+        const y=1-2*(i+.5)/count,a=i*2.3999632297,r=Math.sqrt(1-y*y),speed=1.7+random()*1.4;
+        velocities.push(new THREE.Vector3(Math.cos(a)*r,y,Math.sin(a)*r).multiplyScalar(speed));
+      }
+      const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.BufferAttribute(positions,3));
+      const material=new THREE.PointsMaterial({map:haloTexture,color:palette[k],size:mobile?.2:.17,transparent:true,opacity:0,depthWrite:false,blending:THREE.AdditiveBlending,fog:false});
+      const points=new THREE.Points(geo,material);points.name='wish-fireworks';points.frustumCulled=false;
+      // Place bursts on the far side of the tree relative to the current orbit.
+      const side=(k-1)*4.2;
+      const center=new THREE.Vector3(Math.cos(angle)*side-Math.sin(angle)*3,12.5+(k===1?1:0),-Math.sin(angle)*side-Math.cos(angle)*3);
+      points.position.copy(center);scene.add(points);
+      fireworks.push({points,positions,velocities,age:-k*.65});
+    }
+  }
+  function updateFireworks(dt){
+    for(let n=fireworks.length-1;n>=0;n--){
+      const f=fireworks[n];if(!stopped)f.age+=dt;
+      if(f.age<0)continue;
+      if(f.age>4.6){scene.remove(f.points);f.points.geometry.dispose();f.points.material.dispose();fireworks.splice(n,1);continue;}
+      const burst=f.age-.7;
+      f.points.material.opacity=burst<0?.75:Math.min(1,Math.max(0,(3.9-burst)/2.4));
+      for(let i=0;i<f.velocities.length;i++)for(let trail=0;trail<3;trail++){
+        const offset=(i*3+trail)*3;
+        if(burst<0){
+          f.positions[offset]=0;f.positions[offset+1]=-6+f.age/.7*6-trail*.14;f.positions[offset+2]=0;
+        }else{
+          const t=Math.max(0,burst-trail*.055),drag=(1-Math.exp(-t*.75))/.75,v=f.velocities[i];
+          f.positions[offset]=v.x*drag;f.positions[offset+1]=v.y*drag-.48*t*t;f.positions[offset+2]=v.z*drag;
+        }
+      }
+      f.points.geometry.attributes.position.needsUpdate=true;
+    }
+  }
+
   const attachedWishes=[];let active=true,stopped=paused,time=0,last=0,raf=0,angle=0,selected=-1,heartProgress=seen.size===6?1:0,pointer=null,homeDistance=25;
   function home(){selected=-1;target.set(Math.sin(angle)*homeDistance,7,Math.cos(angle)*homeDistance);targetLook.set(0,6,0);schedule();}
   function resize(){const w=host.clientWidth,h=host.clientHeight;if(!w||!h)return;renderer.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix();homeDistance=Math.max(25,7/(Math.tan(THREE.MathUtils.degToRad(24))*camera.aspect));if(selected<0){home();camera.position.copy(target);look.copy(targetLook);}schedule();}
@@ -64,6 +111,7 @@ export function createWishTree(host, { opened = [], wishes = [], paused = false,
       f.item.group.rotation.z=Math.sin(time*.65+f.phase)*.035;
       f.item.glow.material.opacity=.5;
     });
+    updateFireworks(dt);
     renderer.render(scene,camera);if(!stopped||moving||pointer)schedule();
   }
   function select(i){if(!Number.isInteger(i)||i<0||i>=6)return;seen.add(i);selected=i;const p=lanterns[i].base;target.copy(p).add(new THREE.Vector3(.7,.4,Math.max(4,2.3/camera.aspect)));targetLook.copy(p);schedule();}
@@ -101,5 +149,5 @@ export function createWishTree(host, { opened = [], wishes = [], paused = false,
   }
   wishes.slice(-30).forEach(text=>attachWish(text,true));
   const observer=new ResizeObserver(resize);observer.observe(host);resize();
-  return {select,home,setPaused(value){stopped=value;last=0;schedule();},release(text){attachWish(text);home();schedule();},dispose(){active=false;cancelAnimationFrame(raf);observer.disconnect();events.forEach(off=>off());const gs=new Set(),ms=new Set(),ts=new Set();scene.traverse(o=>{if(o.geometry)gs.add(o.geometry);if(o.material)ms.add(o.material);});ms.forEach(m=>{Object.values(m).forEach(v=>{if(v?.isTexture)ts.add(v)});m.dispose();});gs.forEach(g=>g.dispose());ts.forEach(t=>t.dispose());moonlight.shadow.map?.dispose();renderer.dispose();renderer.forceContextLoss();canvas.remove();}};
+  return {select,home,setPaused(value){stopped=value;last=0;schedule();},release(text){if(typeof text!=='string'||!text.trim())return;attachWish(text);home();celebrateWish();schedule();},dispose(){active=false;cancelAnimationFrame(raf);observer.disconnect();events.forEach(off=>off());const gs=new Set(),ms=new Set(),ts=new Set();scene.traverse(o=>{if(o.geometry)gs.add(o.geometry);if(o.material)ms.add(o.material);});ms.forEach(m=>{Object.values(m).forEach(v=>{if(v?.isTexture)ts.add(v)});m.dispose();});gs.forEach(g=>g.dispose());ts.forEach(t=>t.dispose());moonlight.shadow.map?.dispose();renderer.dispose();renderer.forceContextLoss();canvas.remove();}};
 }
