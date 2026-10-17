@@ -3,11 +3,11 @@
 (() => {
   'use strict';
   const worlds=window.PlanetWorlds;
-  const themes={0:{name:'Khu vườn Nụ cười',light:[1,.85,.92],shade:[.48,.55,.74]},1:{name:'Rạp kỷ niệm',light:[1,.85,.62],shade:[.31,.25,.47]},4:{name:'Bờ biển Bình yên',light:[1,.78,.53],shade:[.48,.35,.55]},5:{name:'Cây điều ước',light:[.65,.72,1],shade:[.12,.16,.36]}};
+  const themes={0:{name:'Khu vườn Nụ cười',light:[1,.85,.92],shade:[.48,.55,.74]},1:{name:'Rạp kỷ niệm',light:[1,.85,.62],shade:[.31,.25,.47]},4:{space:true,spaceColor:'#28334b',name:'Bờ biển Bình yên',light:[1,.78,.53],shade:[.48,.35,.55]},5:{space:true,spaceColor:'#30254f',name:'Cây điều ước',light:[.65,.72,1],shade:[.12,.16,.36]}};
   const modules={0:'./garden-three.js',1:'./cinema-three.js',4:'./beach-three.js',5:'./wish-tree-three.js'};
   const overlay=document.createElement('dialog');overlay.className='cloud-flight';overlay.setAttribute('aria-label','Đang bay qua tầng mây');
-  overlay.innerHTML='<div class="cloud-fallback" aria-hidden="true"><i></i><i></i><i></i></div><canvas aria-hidden="true"></canvas><div class="cloud-caption"><small>MỘT THẾ GIỚI DÀNH CHO LINH</small><p role="status" aria-live="polite"></p></div><button type="button" class="cloud-skip">Bỏ qua chuyển cảnh →</button>';
-  document.body.append(overlay);const canvas=overlay.querySelector('canvas'),caption=overlay.querySelector('p'),skip=overlay.querySelector('button');
+  overlay.innerHTML='<div class="cloud-fallback" aria-hidden="true"><i></i><i></i><i></i></div><canvas aria-hidden="true"></canvas><canvas class="space-canvas" aria-hidden="true"></canvas><div class="cloud-caption"><small>MỘT THẾ GIỚI DÀNH CHO LINH</small><p role="status" aria-live="polite"></p></div><button type="button" class="cloud-skip">Bỏ qua chuyển cảnh →</button>';
+  document.body.append(overlay);const canvas=overlay.querySelector('canvas'),spaceCanvas=overlay.querySelector('.space-canvas'),caption=overlay.querySelector('p'),skip=overlay.querySelector('button');
   let flight=null;
   function makeClouds(theme){
     const gl=canvas.getContext('webgl',{alpha:true,premultipliedAlpha:false,antialias:false,powerPreference:'low-power'});if(!gl)return null;
@@ -38,6 +38,45 @@
       resize();return {resize,draw(t,c){gl.uniform1f(u.time,t);gl.uniform1f(u.cover,c);gl.drawArrays(gl.TRIANGLES,0,6);},dispose};
     }catch(error){console.warn('Cloud transition fallback:',error);dispose();return null;}
   }
+
+  // Perspective star field: the camera advances through a 3D distribution of stars.
+  // Separate canvas keeps the cloud renderer's WebGL context intact.
+  function makeSpace(theme){
+    const ctx=spaceCanvas.getContext('2d',{alpha:false});if(!ctx)return null;
+    const mobile=innerWidth<700,stars=[];let w=1,h=1,last=0,nebula;
+    let seed=721;const random=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;};
+    for(let i=0;i<(mobile?180:340);i++)stars.push({x:(random()-.5)*34,y:(random()-.5)*34,z:.5+random()*28,size:.5+random()*1.3,tint:random()});
+    function resize(){
+      const scale=Math.min(devicePixelRatio||1,1.5,Math.sqrt(900000/(innerWidth*innerHeight)));
+      w=spaceCanvas.width=Math.max(1,Math.round(innerWidth*scale));h=spaceCanvas.height=Math.max(1,Math.round(innerHeight*scale));
+      nebula=ctx.createRadialGradient(w*.5,h*.44,0,w*.5,h*.44,Math.max(w,h)*.7);
+      nebula.addColorStop(0,theme.spaceColor);nebula.addColorStop(.35,'#12172e');nebula.addColorStop(1,'#02040d');
+    }
+    resize();
+    return {resize,dispose(){ctx.clearRect(0,0,w,h);},draw(t){
+      const dt=last?Math.min(.08,t-last):0;last=t;
+      const speed=5+17*Math.min(1,t/1.7),focal=Math.min(w,h)*.8,cx=w*.5,cy=h*.44;
+      ctx.fillStyle=nebula;ctx.fillRect(0,0,w,h);
+      ctx.lineCap='round';
+      for(const star of stars){
+        star.z-=dt*speed;
+        if(star.z<.3){star.z+=28;star.x=(random()-.5)*34;star.y=(random()-.5)*34;}
+        const x=cx+star.x*focal/star.z,y=cy+star.y*focal/star.z;
+        if(x< -80||x>w+80||y< -80||y>h+80)continue;
+        const tail=star.z+speed*.035;
+        const px=cx+star.x*focal/tail,py=cy+star.y*focal/tail;
+        const alpha=Math.min(.95,(1-star.z/29)*.85+.1);
+        ctx.strokeStyle=star.tint>.8?'rgba(255,218,204,'+alpha+')':'rgba(195,218,255,'+alpha+')';
+        ctx.lineWidth=Math.min(2.8,star.size*(.45+2/star.z));
+        ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(x,y);ctx.stroke();
+      }
+      // A quiet destination glow at the vanishing point; never an opaque white flash.
+      const glow=ctx.createRadialGradient(cx,cy,0,cx,cy,Math.min(w,h)*.18);
+      glow.addColorStop(0,'rgba(180,200,255,.16)');glow.addColorStop(1,'rgba(100,130,255,0)');
+      ctx.fillStyle=glow;ctx.fillRect(0,0,w,h);
+    }};
+  }
+
   function enter(f){if(f.entered)return;f.entered=true;
     // Reopen the transition last in the top layer, above the destination dialog.
     // All three operations happen in one task: no uncovered frame is painted.
@@ -55,7 +94,9 @@
     import(modules[id]).catch(()=>{});
     const theme=themes[id];let resolve;const promise=new Promise(r=>resolve=r);const f={id,promise,resolve,origin:document.activeElement,entered:false,ready:false,t:0,last:0,exit:null,raf:0,clouds:null};flight=f;
     overlay.style.setProperty('--cloud-tint',`rgb(${theme.light.map(v=>Math.round(v*255)).join(',')})`);caption.textContent=theme.name;overlay.classList.add('cloud-active');overlay.style.opacity='0';overlay.showModal();skip.focus({preventScroll:true});
-    f.clouds=makeClouds(theme);overlay.classList.toggle('cloud-webgl',Boolean(f.clouds));
+    overlay.classList.toggle('space-flight',Boolean(theme.space));
+    overlay.setAttribute('aria-label',theme.space?'Đang bay xuyên không gian':'Đang bay qua tầng mây');
+    f.clouds=theme.space?makeSpace(theme):makeClouds(theme);overlay.classList.toggle('cloud-webgl',Boolean(f.clouds));
     f.watchdog=setTimeout(finish,10000);
     function frame(now){if(flight!==f)return;const dt=f.last?Math.min(.08,(now-f.last)/1000):.016;f.last=now;f.t+=dt;
       if(f.t>=1.35&&!f.entered)enter(f);
