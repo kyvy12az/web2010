@@ -1,8 +1,7 @@
-/* A storybook voice for Linh. Load after the original component styles. */
+/* Linh: one editorial serif voice, with a quiet Vietnamese UI companion. */
 :root {
   --font-body: 'Be Vietnam Pro', system-ui, sans-serif;
   --font-title: 'Cormorant Garamond', Georgia, serif;
-  --font-hand: 'Dancing Script', cursive;
   font-family: var(--font-body);
 }
 body, .memory-cinema, .wish-world { font-family: var(--font-body); }
@@ -23,22 +22,26 @@ button, input, textarea, select,
   line-height: 1.2;
   text-wrap: balance;
 }
-.hero h1 { letter-spacing: -.045em; line-height: 1.14; }
+.hero h1 { letter-spacing: -.035em; line-height: 1.18; }
 .hero h1 em, .section-title em {
-  font-family: var(--font-hand);
+  font-family: var(--font-title);
   font-weight: 500;
-  font-style: normal;
-  letter-spacing: -.035em;
-  display: inline-block;
-  padding: .06em .09em .12em;
-  text-shadow: 0 3px 24px #f3b4bd26;
+  font-style: italic;
+  letter-spacing: -.025em;
+  padding-inline: .025em;
+  color: #efbac5;
 }
 .brand, .signature, .letter h3, .photo-card span {
-  font-family: var(--font-hand);
+  font-family: var(--font-title);
   font-weight: 600;
   letter-spacing: 0;
 }
-.brand { font-size: 27px; }
+.brand { display: inline-flex; align-items: center; gap: 10px; font-size: 27px; font-style: italic; }
+.brand::before { content: '✧'; font: 17px Georgia, serif; color: #efbac5; }
+.brand::after { content: ''; width: 28px; height: 1px; background: linear-gradient(90deg, #efbac5, transparent); }
+.signature { font-style: italic; }
+.letter h3 { font-style: italic; }
+.photo-card span { font-style: italic; }
 .signature { font-size: clamp(28px, 5vw, 36px); line-height: 1.5; }
 .letter h3 { font-size: clamp(36px, 6vw, 48px); line-height: 1.4; }
 .photo-card span { font-size: 20px; line-height: 1.4; padding-top: 8px; }
