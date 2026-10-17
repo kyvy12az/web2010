@@ -3,7 +3,7 @@ import { Tree } from './vendor/ez-tree/tree.js';
 import { oakPreset } from './vendor/ez-tree/preset.js';
 import { addWishFlowers } from './wish-flowers.js';
 
-export function createWishTree(host, { opened = [], paused = false, onSelect } = {}) {
+export function createWishTree(host, { opened = [], wishes = [], paused = false, onSelect, onWishSelect } = {}) {
   const mobile=host.clientWidth<700,reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
   const renderer=new THREE.WebGLRenderer({antialias:!mobile});renderer.setPixelRatio(Math.min(devicePixelRatio||1,mobile?1.25:1.6));renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.5;
   renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
@@ -43,7 +43,7 @@ export function createWishTree(host, { opened = [], paused = false, onSelect } =
   const heartStars=new THREE.Points(new THREE.BufferGeometry().setFromPoints(heartPoints.filter((_,i)=>i%4===0)),new THREE.PointsMaterial({color:'#ffe2d6',size:.15,transparent:true,opacity:0,fog:false}));scene.add(heartStars);
   const fireGeo=new THREE.BufferGeometry(),firePos=new Float32Array(55*3),fireSeeds=Array.from({length:55},()=>({x:(random()-.5)*18,y:random()*2+.5,z:(random()-.5)*16,p:random()*7}));fireGeo.setAttribute('position',new THREE.BufferAttribute(firePos,3));scene.add(new THREE.Points(fireGeo,new THREE.PointsMaterial({map:haloTexture,color:'#e8edaa',size:.18,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending})));
   const meteor=new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(),new THREE.Vector3(3,1,0)]),new THREE.LineBasicMaterial({color:'#e0d4ff',transparent:true,opacity:0,fog:false}));scene.add(meteor);
-  const flying=[];let active=true,stopped=paused,time=0,last=0,raf=0,angle=0,selected=-1,heartProgress=seen.size===6?1:0,pointer=null,homeDistance=25;
+  const attachedWishes=[];let active=true,stopped=paused,time=0,last=0,raf=0,angle=0,selected=-1,heartProgress=seen.size===6?1:0,pointer=null,homeDistance=25;
   function home(){selected=-1;target.set(Math.sin(angle)*homeDistance,7,Math.cos(angle)*homeDistance);targetLook.set(0,6,0);schedule();}
   function resize(){const w=host.clientWidth,h=host.clientHeight;if(!w||!h)return;renderer.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix();homeDistance=Math.max(25,7/(Math.tan(THREE.MathUtils.degToRad(24))*camera.aspect));if(selected<0){home();camera.position.copy(target);look.copy(targetLook);}schedule();}
   function schedule(){if(active&&!document.hidden&&!raf)raf=requestAnimationFrame(frame);}
@@ -52,18 +52,54 @@ export function createWishTree(host, { opened = [], paused = false, onSelect } =
     if(seen.size===6&&heartProgress<1){heartProgress=reduced?1:Math.min(1,heartProgress+dt*.3);moving=true;}heartGeo.setDrawRange(0,Math.floor(heartProgress*81));heartStars.material.opacity=heartProgress*.9;
     fireSeeds.forEach((s,i)=>{firePos[i*3]=s.x+Math.sin(time*.4+s.p)*.65;firePos[i*3+1]=s.y+Math.sin(time*.7+s.p)*.3;firePos[i*3+2]=s.z+Math.cos(time*.3+s.p)*.5;});fireGeo.attributes.position.needsUpdate=true;stars.material.opacity=.7+Math.sin(time*.4)*.12;
     const mt=time%17;meteor.material.opacity=mt<1.3?Math.sin(mt/1.3*Math.PI)*.7:0;meteor.position.set(12-mt*9,23-mt*4,-28);
-    for(let i=flying.length-1;i>=0;i--){const f=flying[i];if(!stopped)f.age+=dt;f.item.group.position.set(Math.sin(f.age*.45)*.6,2+f.age*1.5,3-f.age*.3);f.item.group.rotation.y=f.age*.3;f.item.glow.material.opacity=Math.max(0,.5-f.age/50);if(f.age>22){scene.remove(f.item.group);f.item.paper.dispose();f.item.glow.material.dispose();flying.splice(i,1);}}
+    attachedWishes.forEach(f=>{
+      if(!f.landed){
+        if(!stopped)f.age=Math.min(3,f.age+dt);
+        const u=f.age/3,t=u*u*(3-2*u);
+        f.item.group.position.copy(f.start).lerp(f.end,t);
+        f.item.group.position.y+=Math.sin(Math.PI*t)*1.5;
+        f.item.group.position.x+=Math.sin(Math.PI*t)*.6;
+        if(u>=1){f.landed=true;f.string.visible=true;f.item.group.position.copy(f.end);}
+      }
+      f.item.group.rotation.z=Math.sin(time*.65+f.phase)*.035;
+      f.item.glow.material.opacity=.5;
+    });
     renderer.render(scene,camera);if(!stopped||moving||pointer)schedule();
   }
   function select(i){if(!Number.isInteger(i)||i<0||i>=6)return;seen.add(i);selected=i;const p=lanterns[i].base;target.copy(p).add(new THREE.Vector3(.7,.4,Math.max(4,2.3/camera.aspect)));targetLook.copy(p);schedule();}
   const ray=new THREE.Raycaster(),events=[];const listen=(n,k,f)=>{n.addEventListener(k,f);events.push(()=>n.removeEventListener(k,f));};
   listen(canvas,'pointerdown',e=>{if(pointer||e.button>0)return;pointer={id:e.pointerId,x:e.clientX,y:e.clientY,lx:e.clientX,moved:false};canvas.setPointerCapture(e.pointerId);});
   listen(canvas,'pointermove',e=>{if(!pointer||pointer.id!==e.pointerId)return;if(Math.hypot(e.clientX-pointer.x,e.clientY-pointer.y)>6)pointer.moved=true;if(pointer.moved){angle-=(e.clientX-pointer.lx)*.005;home();}pointer.lx=e.clientX;});
-  listen(canvas,'pointerup',e=>{if(!pointer||pointer.id!==e.pointerId)return;const tap=!pointer.moved;pointer=null;if(tap){const r=canvas.getBoundingClientRect();ray.setFromCamera(new THREE.Vector2((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1),camera);const hit=ray.intersectObjects(pickables)[0];if(hit)onSelect?.(hit.object.userData.lantern);}schedule();});
+  listen(canvas,'pointerup',e=>{if(!pointer||pointer.id!==e.pointerId)return;const tap=!pointer.moved;pointer=null;if(tap){const r=canvas.getBoundingClientRect();ray.setFromCamera(new THREE.Vector2((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1),camera);const hit=ray.intersectObjects(pickables)[0];if(hit){const wish=hit.object.userData.wish;if(wish!==undefined){const f=attachedWishes.find(w=>w.item.body===hit.object);if(f){selected=6;target.copy(f.item.group.position).add(new THREE.Vector3(.7,.4,Math.max(4,2.3/camera.aspect)));targetLook.copy(f.item.group.position);schedule();onWishSelect?.(wish);}}else onSelect?.(hit.object.userData.lantern);}}schedule();});
   for(const key of ['pointercancel','lostpointercapture'])listen(canvas,key,()=>{pointer=null;});
   listen(canvas,'keydown',e=>{if(!['ArrowLeft','ArrowRight','Home'].includes(e.key))return;e.preventDefault();angle=e.key==='Home'?0:angle+(e.key==='ArrowLeft'?-.15:.15);home();});
   listen(document,'visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(raf);raf=0;}last=0;schedule();});
   listen(canvas,'webglcontextlost',e=>{e.preventDefault();active=false;cancelAnimationFrame(raf);host.dispatchEvent(new CustomEvent('wish-context-lost'));});
+  function attachWish(text,restore=false){
+    if(typeof text!=='string'||!text.trim())return;
+    // Keep the same thirty wishes as storage; remove only the oldest when full.
+    if(attachedWishes.length>=30){
+      const old=attachedWishes.shift();scene.remove(old.item.group,old.string);
+      const index=pickables.indexOf(old.item.body);if(index>=0)pickables.splice(index,1);
+      old.item.paper.dispose();old.item.glow.material.dispose();old.string.geometry.dispose();
+    }
+    const occupied=[...chosen,...attachedWishes.map(f=>f.anchor)];
+    const anchor=candidates.reduce((best,p)=>{
+      const spacing=Math.min(...occupied.map(q=>p.distanceTo(q)));
+      // Prefer well-separated real branch points, with a slight bias to the front.
+      const score=spacing+Math.max(-2,Math.min(2,p.z))*.035;
+      return !best||score>best.score?{p,score}:best;
+    },null)?.p.clone()||new THREE.Vector3(0,6,0);
+    const item=lantern(-1);item.body.userData.wish=text;
+    item.paper.color.set('#ffd4c4');item.paper.emissive.set('#ffad7a');
+    const end=anchor.clone().add(new THREE.Vector3(0,-.95,0)),start=new THREE.Vector3(0,2,3);
+    const landed=restore||reduced||stopped;
+    item.group.position.copy(landed?end:start);scene.add(item.group);pickables.push(item.body);
+    const string=new THREE.Mesh(new THREE.CylinderGeometry(.012,.012,.55,5),gold);
+    string.position.copy(anchor).add(new THREE.Vector3(0,-.275,0));string.visible=landed;scene.add(string);
+    attachedWishes.push({item,string,anchor,start,end,landed,age:landed?3:0,phase:attachedWishes.length*1.7});
+  }
+  wishes.slice(-30).forEach(text=>attachWish(text,true));
   const observer=new ResizeObserver(resize);observer.observe(host);resize();
-  return {select,home,setPaused(value){stopped=value;last=0;schedule();},release(){if(flying.length>=8){const old=flying.shift();scene.remove(old.item.group);old.item.paper.dispose();old.item.glow.material.dispose();}const item=lantern(-1);item.group.position.set(0,2,3);scene.add(item.group);flying.push({item,age:reduced||stopped?8:0});home();schedule();},dispose(){active=false;cancelAnimationFrame(raf);observer.disconnect();events.forEach(off=>off());const gs=new Set(),ms=new Set(),ts=new Set();scene.traverse(o=>{if(o.geometry)gs.add(o.geometry);if(o.material)ms.add(o.material);});ms.forEach(m=>{Object.values(m).forEach(v=>{if(v?.isTexture)ts.add(v)});m.dispose();});gs.forEach(g=>g.dispose());ts.forEach(t=>t.dispose());moonlight.shadow.map?.dispose();renderer.dispose();renderer.forceContextLoss();canvas.remove();}};
+  return {select,home,setPaused(value){stopped=value;last=0;schedule();},release(text){attachWish(text);home();schedule();},dispose(){active=false;cancelAnimationFrame(raf);observer.disconnect();events.forEach(off=>off());const gs=new Set(),ms=new Set(),ts=new Set();scene.traverse(o=>{if(o.geometry)gs.add(o.geometry);if(o.material)ms.add(o.material);});ms.forEach(m=>{Object.values(m).forEach(v=>{if(v?.isTexture)ts.add(v)});m.dispose();});gs.forEach(g=>g.dispose());ts.forEach(t=>t.dispose());moonlight.shadow.map?.dispose();renderer.dispose();renderer.forceContextLoss();canvas.remove();}};
 }
