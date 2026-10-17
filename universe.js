@@ -108,7 +108,7 @@
     }
     ctx.restore();
     if (planet.ring) ring(planet,true);
-    ctx.textAlign='center';ctx.font='500 '+(width<500?10:11)+'px sans-serif';
+    ctx.textAlign='center';ctx.font='500 '+(width<500?10:11)+'px Quicksand, sans-serif';
     ctx.fillStyle='#eadcf3';ctx.fillText(String(planet.i+1).padStart(2,'0'),point.x,point.y+radius+18);
     hitTargets.push({i:planet.i,x:point.x,y:point.y,r:Math.max(24,radius+8),depth:point.depth});
   }

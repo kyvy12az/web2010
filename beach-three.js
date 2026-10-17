@@ -95,7 +95,7 @@ export function createBeach(container, { onSelect, paused = false } = {}) {
     const body=new THREE.Mesh(new THREE.LatheGeometry(shape,32),glass);body.castShadow=true;body.userData.bottle=i;group.add(body);pickables.push(body);
     const cork=new THREE.Mesh(new THREE.CylinderGeometry(.087,.09,.18,12),corkMaterial);cork.position.y=1.29;group.add(cork);
     const paper=new THREE.Mesh(new THREE.CylinderGeometry(.09,.09,.58,16),paperMaterial);paper.position.y=.44;paper.rotation.z=.16;group.add(paper);
-    const tagCanvas=document.createElement('canvas');tagCanvas.width=tagCanvas.height=128;const tx=tagCanvas.getContext('2d');tx.fillStyle='rgba(255,241,215,.92)';tx.beginPath();tx.arc(64,64,44,0,Math.PI*2);tx.fill();tx.fillStyle='#685242';tx.textAlign='center';tx.textBaseline='middle';tx.font='500 38px sans-serif';tx.fillText('0'+(i+1),64,66);
+    const tagCanvas=document.createElement('canvas');tagCanvas.width=tagCanvas.height=128;const tx=tagCanvas.getContext('2d');tx.fillStyle='rgba(255,241,215,.92)';tx.beginPath();tx.arc(64,64,44,0,Math.PI*2);tx.fill();tx.fillStyle='#685242';tx.textAlign='center';tx.textBaseline='middle';tx.font='500 38px Quicksand, sans-serif';tx.fillText('0'+(i+1),64,66);
     const texture=new THREE.CanvasTexture(tagCanvas);texture.colorSpace=THREE.SRGBColorSpace;const label=new THREE.Sprite(new THREE.SpriteMaterial({map:texture,depthTest:false,transparent:true}));label.position.y=1.8;label.scale.set(.55,.55,1);label.userData.bottle=i;group.add(label);pickables.push(label);
     scene.add(group);bottles.push({group,cork,paper,selected:false});
   });

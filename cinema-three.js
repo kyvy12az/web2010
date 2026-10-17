@@ -59,7 +59,7 @@ export function createCinema(host, { memories = [], onSeat = () => {}, onEnd = (
   const images = memories.map(m => { const img = new Image(); img.onload = () => { lastSlide = -2; schedule(); }; img.onerror = () => { lastSlide = -2; schedule(); }; img.src = m.src || ''; return img; });
   const target = new THREE.Vector3(0, 4.4, 9), aim = new THREE.Vector3(0, 3.5, zScreen);
   camera.position.copy(target); camera.lookAt(aim);
-  function title(text, y, size = 64, color = '#f6dfbe') { ctx.fillStyle = color; ctx.font = `${size}px Georgia, serif`; ctx.textAlign = 'center'; ctx.fillText(text, 800, y, 1450); }
+  function title(text, y, size = 64, color = '#f6dfbe') { ctx.fillStyle = color; ctx.font = `${size}px Quicksand, sans-serif`; ctx.textAlign = 'center'; ctx.fillText(text, 800, y, 1450); }
   function drawScreen() {
     const contentStart = 5, contentEnd = duration - 7;
     const slide = !started || elapsed < contentStart ? -1 : elapsed >= contentEnd ? images.length : Math.min(images.length - 1, Math.floor((elapsed - contentStart) / (contentEnd - contentStart) * images.length));
